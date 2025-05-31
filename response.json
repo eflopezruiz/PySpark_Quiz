@@ -1,0 +1,406 @@
+[
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "¿Cuál es la principal diferencia entre un RDD y un DataFrame en Spark?",
+      "options": [
+        "A. Los RDDs soportan SQL, los DataFrames no",
+        "B. Los DataFrames tienen optimización a nivel de ejecución (Catalyst), los RDDs no",
+        "C. Los RDDs son inmutables, los DataFrames no",
+        "D. Los DataFrames no pueden agruparse"
+      ],
+      "answer": "B",
+      "concept": "El optimizador Catalyst y el gestor de ejecución Tungsten permiten optimizaciones en DataFrames que no existen en RDDs."
+    },
+    {
+      "id": "2a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df`, escribe la instrucción de PySpark (una sola línea) para mostrar los primeros 10 registros.",
+      "answer": "df.show(10)",
+      "concept": "Las acciones en Spark como `show()` forzan la evaluación perezosa."
+    },
+    {
+      "id": "2b",
+      "type": "conceptual",
+      "question": "Explica qué es lazy evaluation en Spark y menciona al menos dos beneficios.",
+      "keywords": ["retarda", "transformaciones", "acción", "optimización", "planificación", "evita cálculos innecesarios"],
+      "concept": "Lazy evaluation retrasa la ejecución de transformaciones hasta que se solicita un resultado (acción), permitiendo optimizar todo el pipeline y evitar cálculos redundantes."
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "¿Cuál de las siguientes operaciones en PySpark es una acción (action)?",
+      "options": [
+        "A. filter()",
+        "B. map()",
+        "C. count()",
+        "D. select()"
+      ],
+      "answer": "C",
+      "concept": "Las acciones devuelven un valor al driver (p.ej. `count()`, `collect()`), mientras que las transformaciones devuelven un nuevo RDD o DataFrame."
+    },
+    {
+      "id": "4a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df`, escribe la instrucción de PySpark para eliminar todas las filas que contengan valores nulos.",
+      "answer": "df.na.drop()",
+      "concept": "Usar `na.drop()` elimina filas con nulos; otras estrategias pueden imputar o rellenar valores."
+    },
+    {
+      "id": "4b",
+      "type": "conceptual",
+      "question": "¿Cómo manejarías valores nulos al preparar datos para un análisis en PySpark? Menciona al menos dos métodos.",
+      "keywords": ["na.drop", "na.fill", "imputar", "media", "mediana", "moda", "expr"],
+      "concept": "Es clave decidir entre eliminar filas, reemplazar con media/mediana/moda o usar expresiones condicionales para imputación."
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice",
+      "question": "En Spark SQL, ¿qué hace el método .explain() de un DataFrame?",
+      "options": [
+        "A. Muestra un resumen estadístico",
+        "B. Ejecuta el query y devuelve resultados",
+        "C. Muestra el plan de ejecución físico y lógico",
+        "D. Exporta el DataFrame a un CSV"
+      ],
+      "answer": "C",
+      "concept": "Permite ver cómo Catalyst optimiza la consulta y ayuda a detectar cuellos de botella."
+    },
+    {
+      "id": 6,
+      "type": "multiple_choice",
+      "question": "¿Qué es un broadcast variable en Spark?",
+      "options": [
+        "A. Una variable que se actualiza en cada partición",
+        "B. Un mecanismo para compartir datos sólo de lectura con todos los ejecutores",
+        "C. Un tipo especial de RDD",
+        "D. Una configuración de memoria"
+      ],
+      "answer": "B",
+      "concept": "Se usan para enviar grandes colecciones sólo una vez al clúster, evitando múltiples copias."
+    },
+    {
+      "id": "7a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df`, escribe la instrucción de PySpark para reparticionarlo en 8 particiones.",
+      "answer": "df.repartition(8)",
+      "concept": "Reparticionar ajusta el paralelismo; un número adecuado equilibra la carga y reduce overhead."
+    },
+    {
+      "id": "7b",
+      "type": "conceptual",
+      "question": "Define la función de las particiones en Spark y cómo influyen en el rendimiento.",
+      "keywords": ["paralelización", "carga", "overhead", "número de particiones", "tamaño"],
+      "concept": "Las particiones determinan el nivel de paralelización; muy pocas o muchas particiones afectan negativamente el rendimiento."
+    },
+    {
+      "id": 8,
+      "type": "multiple_choice",
+      "question": "¿Cuál es el propósito de cache() en un DataFrame de PySpark?",
+      "options": [
+        "A. Eliminar particiones",
+        "B. Almacenar en memoria para acelerar accesos posteriores",
+        "C. Exportar datos a disco",
+        "D. Reparticionar automáticamente"
+      ],
+      "answer": "B",
+      "concept": "Útil cuando un DataFrame se reusa varias veces, evita recomputar transformaciones."
+    },
+    {
+      "id": 9,
+      "type": "multiple_choice",
+      "question": "¿Cuál comando usarías para leer un archivo Parquet en PySpark?",
+      "options": [
+        "A. spark.read.csv()",
+        "B. spark.read.text()",
+        "C. spark.read.parquet()",
+        "D. spark.read.json()"
+      ],
+      "answer": "C",
+      "concept": "Parquet es un formato columnar optimizado; `spark.read.parquet()` lo carga directamente."
+    },
+    {
+      "id": "10a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df1` y otro `df2` pequeño, escribe la instrucción de PySpark para hacer un broadcast join sobre la columna 'id'.",
+      "answer": "from pyspark.sql.functions import broadcast; df1.join(broadcast(df2), 'id')",
+      "concept": "Un broadcast join envía la tabla pequeña a todos los ejecutores para hacer el join localmente."
+    },
+    {
+      "id": "10b",
+      "type": "conceptual",
+      "question": "¿Cómo explicarías la diferencia entre un join estándar y un broadcast join?",
+      "keywords": ["shuffle", "tabla pequeña", "broadcast", "rendimiento", "costo"],
+      "concept": "El broadcast join evita el shuffle costoso al enviar la tabla pequeña a todos los nodos."
+    },
+    {
+      "id": 11,
+      "type": "multiple_choice",
+      "question": "¿Qué hace el método repartition() en un DataFrame?",
+      "options": [
+        "A. Cambia el número de particiones mediante shuffle",
+        "B. Elimina duplicados",
+        "C. Filtra datos nulos",
+        "D. Aplica funciones de agregación"
+      ],
+      "answer": "A",
+      "concept": "Reparte los datos por hash o columnas indicadas y provoca shuffle."
+    },
+    {
+      "id": "12a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df` con posible data skew en la columna 'key', escribe una instrucción sencilla para agregar una sal (salt) a esa columna.",
+      "answer": "from pyspark.sql.functions import rand; df.withColumn('key_salted', concat(col('key'), (rand()*10).cast('int')))",
+      "concept": "El salting distribuye mejor las claves para evitar particiones desbalanceadas."
+    },
+    {
+      "id": "12b",
+      "type": "conceptual",
+      "question": "Describe cómo detectarías y resolverías data skew en un join en PySpark.",
+      "keywords": ["distribución", "claves", "salting", "broadcast join", "particionar"],
+      "concept": "Data skew causa particiones desbalanceadas; soluciones incluyen salting, broadcast joins o particionamiento explícito."
+    },
+    {
+      "id": 13,
+      "type": "multiple_choice",
+      "question": "En MLlib de PySpark, ¿qué transforma string labels a índices numéricos?",
+      "options": [
+        "A. StringIndexer",
+        "B. OneHotEncoder",
+        "C. VectorAssembler",
+        "D. Tokenizer"
+      ],
+      "answer": "A",
+      "concept": "StringIndexer convierte categorías en índices necesarios para algoritmos ML."
+    },
+    {
+      "id": "14a",
+      "type": "coding",
+      "question": "Escribe la instrucción para crear un VectorAssembler que combine las columnas ['col1','col2'] en 'features'.",
+      "answer": "from pyspark.ml.feature import VectorAssembler; assembler = VectorAssembler(inputCols=['col1','col2'], outputCol='features')",
+      "concept": "VectorAssembler combina múltiples columnas en un vector de características."
+    },
+    {
+      "id": "14b",
+      "type": "conceptual",
+      "question": "¿Qué es VectorAssembler y para qué se usa?",
+      "keywords": ["transformador", "columnas", "vector", "features", "ML"],
+      "concept": "Permite preparar datos para modelos ML que esperan un vector de características."
+    },
+    {
+      "id": 15,
+      "type": "multiple_choice",
+      "question": "¿Cuál es la diferencia principal entre map() y flatMap() en un RDD?",
+      "options": [
+        "A. map() aplana el resultado, flatMap() no",
+        "B. flatMap() devuelve múltiples valores por elemento de entrada",
+        "C. map() es acción, flatMap() transformación",
+        "D. No hay diferencia"
+      ],
+      "answer": "B",
+      "concept": "flatMap() puede emitir 0 o más elementos por cada input, ideal para tokenización."
+    },
+    {
+      "id": 16,
+      "type": "multiple_choice",
+      "question": "¿Cómo obtendrías un resumen estadístico (min,max,mean,stddev) de un DataFrame?",
+      "options": [
+        "A. df.describe().show()",
+        "B. df.summary()",
+        "C. df.stats()",
+        "D. spark.stats(df)"
+      ],
+      "answer": "A",
+      "concept": "describe() calcula estadísticas comunes y show() las muestra."
+    },
+    {
+      "id": "17a",
+      "type": "coding",
+      "question": "Dado un DataFrame `df`, escribe la instrucción para mostrar su plan de ejecución.",
+      "answer": "df.explain()",
+      "concept": "Ver el plan de ejecución físico y lógico ayuda a entender el DAG interno de Spark."
+    },
+    {
+      "id": "17b",
+      "type": "conceptual",
+      "question": "Explica cómo funciona el DAG (Directed Acyclic Graph) en Spark.",
+      "keywords": ["grafo", "transformaciones", "optimización", "tareas", "sin ciclos"],
+      "concept": "Spark construye un grafo de transformaciones para planificar la ejecución, optimizar y coordinar tareas sin ciclos."
+    },
+    {
+      "id": 18,
+      "type": "multiple_choice",
+      "question": "¿Qué hace .persist(StorageLevel.MEMORY_AND_DISK)?",
+      "options": [
+        "A. Guarda datos sólo en disco",
+        "B. Guarda en memoria y, si no cabe, en disco",
+        "C. Borra caché previo",
+        "D. Reparticiona datos"
+      ],
+      "answer": "B",
+      "concept": "Combina memoria y disco para manejar conjuntos de datos grandes."
+    },
+    {
+      "id": "19a",
+      "type": "coding",
+      "question": "Escribe un ejemplo de definición de UDF en PySpark que sume 1 a una columna 'x'.",
+      "answer": "from pyspark.sql.functions import udf; from pyspark.sql.types import IntegerType; my_udf = udf(lambda x: x+1, IntegerType())",
+      "concept": "Los UDFs permiten lógica personalizada, pero introducen overhead de serialización."
+    },
+    {
+      "id": "19b",
+      "type": "conceptual",
+      "question": "¿Por qué y cuándo usarías un UDF en PySpark? Menciona una desventaja.",
+      "keywords": ["lógica personalizada", "funciones nativas", "overhead", "serialización", "optimización"],
+      "concept": "UDFs permiten flexibilidad, pero son más lentas que funciones nativas debido al overhead de serialización."
+    },
+    {
+      "id": 20,
+      "type": "multiple_choice",
+      "question": "¿Cuál es el comando para registrar un DataFrame como vista temporal en Spark SQL?",
+      "options": [
+        "A. df.createTempView()",
+        "B. df.registerTable()",
+        "C. df.createGlobalTempView()",
+        "D. spark.registerView()"
+      ],
+      "answer": "A",
+      "concept": "createTempView() crea una vista accesible sólo en la sesión actual."
+    },
+    {
+      "id": "21a",
+      "type": "coding",
+      "question": "¿Cómo obtendrías la URL de la UI web de Spark desde el contexto de Spark en Python?",
+      "answer": "spark.sparkContext.uiWebUrl",
+      "concept": "La propiedad `uiWebUrl` indica dónde acceder al Spark UI para monitoreo."
+    },
+    {
+      "id": "21b",
+      "type": "conceptual",
+      "question": "¿Cómo monitorizarías el uso de recursos y el progreso de un job de Spark?",
+      "keywords": ["Spark UI", "stages", "tasks", "storage", "Ganglia", "Prometheus"],
+      "concept": "Spark UI muestra DAG, tiempo de tareas y almacenamiento; herramientas externas como Ganglia o Prometheus ofrecen métricas adicionales."
+    },
+    {
+      "id": 22,
+      "type": "multiple_choice",
+      "question": "Al leer archivos CSV, ¿cómo manejas cabeceras con spark.read.csv?",
+      "options": [
+        "A. header=False",
+        "B. header=True",
+        "C. headerOption()",
+        "D. headerRow()"
+      ],
+      "answer": "B",
+      "concept": "header=True indica que la primera fila contiene nombres de columna."
+    },
+    {
+      "id": 23,
+      "type": "multiple_choice",
+      "question": "¿Qué hace el transformador OneHotEncoder en MLlib?",
+      "options": [
+        "A. Convierte texto a índice",
+        "B. Genera vectores dispersos para categorías",
+        "C. Ensambla vectores",
+        "D. Normaliza datos"
+      ],
+      "answer": "B",
+      "concept": "Genera columnas binarias para cada categoría."
+    },
+    {
+      "id": "24a",
+      "type": "coding",
+      "question": "Escribe la instrucción para crear un accumulator de enteros en Spark con valor inicial 0.",
+      "answer": "acc = spark.sparkContext.accumulator(0)",
+      "concept": "Los accumulators permiten recolectar métricas de manera segura en paralelo."
+    },
+    {
+      "id": "24b",
+      "type": "conceptual",
+      "question": "¿Qué es un accumulator en Spark y para qué sirve?",
+      "keywords": ["suma", "contadores", "driver", "ejecutores", "métricas"],
+      "concept": "Es una variable de solo suma que los ejecutores pueden incrementar para estadísticas o contadores en el driver."
+    },
+    {
+      "id": 25,
+      "type": "multiple_choice",
+      "question": "¿Cómo se combina un VectorAssembler y un StringIndexer en un Pipeline de MLlib?",
+      "options": [
+        "A. Con Pipeline(stages=[StringIndexer, VectorAssembler])",
+        "B. Con PipelineAssembler()",
+        "C. Con MLFlow",
+        "D. No es posible"
+      ],
+      "answer": "A",
+      "concept": "Pipeline agrupa múltiples transformadores y el estimador final."
+    },
+    {
+      "id": "26a",
+      "type": "coding",
+      "question": "Escribe un ejemplo de creación de ParamGridBuilder en PySpark con una sola grilla para el parámetro 'regParam'.",
+      "answer": "from pyspark.ml.tuning import ParamGridBuilder; grid = ParamGridBuilder().addGrid(lr.regParam, [0.1, 0.01]).build()",
+      "concept": "ParamGridBuilder define combinaciones de hiperparámetros para tuning."
+    },
+    {
+      "id": "26b",
+      "type": "conceptual",
+      "question": "Describe el proceso de tuning de hiperparámetros con CrossValidator en PySpark.",
+      "keywords": ["ParamGridBuilder", "evaluator", "CrossValidator", "k-fold", "métrica"],
+      "concept": "CrossValidator realiza k-fold y mide la métrica para cada combinación de hiperparámetros."
+    },
+    {
+      "id": 27,
+      "type": "multiple_choice",
+      "question": "¿Qué método de MLlib usarías para una regresión lineal?",
+      "options": [
+        "A. LinearRegression()",
+        "B. LogisticRegression()",
+        "C. DecisionTreeRegressor()",
+        "D. RandomForestClassifier()"
+      ],
+      "answer": "A",
+      "concept": "LinearRegression es el estimador para problemas de regresión continua."
+    },
+    {
+      "id": "28a",
+      "type": "coding",
+      "question": "Escribe la instrucción para exportar un DataFrame `df` a Parquet particionado por la columna 'year'.",
+      "answer": "df.write.partitionBy('year').parquet('/ruta/output')",
+      "concept": "El particionamiento mejora la lectura selectiva y el rendimiento."
+    },
+    {
+      "id": "28b",
+      "type": "conceptual",
+      "question": "¿Cómo exportarías los resultados a un archivo Parquet particionado por una columna?",
+      "keywords": ["write", "partitionBy", "parquet", "rendimiento", "selectividad"],
+      "concept": "Usar `partitionBy` agrupa archivos en carpetas según valor de columna, acelerando lecturas filtradas."
+    },
+    {
+      "id": 29,
+      "type": "multiple_choice",
+      "question": "¿Cuál es la diferencia entre globalTempView y tempView?",
+      "options": [
+        "A. Ninguna",
+        "B. globalTempView persiste entre sesiones",
+        "C. tempView persiste entre sesiones",
+        "D. globalTempView está en el catálogo global"
+      ],
+      "answer": "D",
+      "concept": "globalTempView se registra en la base de datos global `spark_catalog`, accesible desde cualquier sesión."
+    },
+    {
+      "id": "30a",
+      "type": "coding",
+      "question": "Escribe la instrucción para habilitar encriptación en tránsito en Spark.",
+      "answer": "spark.conf.set('spark.network.crypto.enabled','true')",
+      "concept": "Habilitar `spark.network.crypto.enabled` cifra la comunicación entre nodos."
+    },
+    {
+      "id": "30b",
+      "type": "conceptual",
+      "question": "¿Qué consideraciones de seguridad tendrías al exponer una aplicación de Spark? Menciona al menos dos.",
+      "keywords": ["Kerberos", "encriptación", "roles", "permisos", "aislamiento", "certificados"],
+      "concept": "La seguridad implica autenticación (p.ej. Kerberos), encriptación en tránsito y reposo, y uso de roles con permisos mínimos."
+    }
+  ]
+  
