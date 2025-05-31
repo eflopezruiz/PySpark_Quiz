@@ -4,7 +4,7 @@ import random
 import time
 import os
 from datetime import datetime, timedelta
-import plotly.express as px
+import altair as alt
 import pandas as pd
 
 # Configuración de página
@@ -199,9 +199,9 @@ def analyze_performance(session_data):
         'difficulties': difficulties
     }
 
-# Mostrar estadísticas con gráficos
+# Mostrar estadísticas con gráficos usando Altair
 def show_performance_charts(performance_data):
-    """Muestra gráficos de rendimiento"""
+    """Muestra gráficos de rendimiento usando Altair"""
     if not performance_data:
         return
     
@@ -213,14 +213,32 @@ def show_performance_charts(performance_data):
             cat_data = []
             for cat, data in performance_data['categories'].items():
                 accuracy = (data['correct'] / data['total']) * 100 if data['total'] > 0 else 0
-                cat_data.append({'Categoría': cat, 'Precisión (%)': accuracy, 'Total': data['total']})
+                cat_data.append({
+                    'Categoría': cat, 
+                    'Precisión (%)': accuracy, 
+                    'Total': data['total']
+                })
             
             if cat_data:
                 df_cat = pd.DataFrame(cat_data)
-                fig = px.bar(df_cat, x='Categoría', y='Precisión (%)', 
-                           title="Precisión por Categoría", color='Precisión (%)',
-                           color_continuous_scale='viridis')
-                st.plotly_chart(fig, use_container_width=True)
+                
+                # Gráfico de barras con Altair
+                chart = alt.Chart(df_cat).mark_bar().add_selection(
+                    alt.selection_interval()
+                ).encode(
+                    x=alt.X('Categoría:N', title='Categoría'),
+                    y=alt.Y('Precisión (%):Q', title='Precisión (%)', scale=alt.Scale(domain=[0, 100])),
+                    color=alt.Color('Precisión (%):Q', 
+                                  scale=alt.Scale(scheme='viridis'), 
+                                  legend=alt.Legend(title="Precisión %")),
+                    tooltip=['Categoría:N', 'Precisión (%):Q', 'Total:Q']
+                ).properties(
+                    width=300,
+                    height=250,
+                    title="Precisión por Categoría"
+                ).interactive()
+                
+                st.altair_chart(chart, use_container_width=True)
     
     with col2:
         st.subheader("🎯 Rendimiento por Dificultad")
@@ -228,13 +246,35 @@ def show_performance_charts(performance_data):
             diff_data = []
             for diff, data in performance_data['difficulties'].items():
                 accuracy = (data['correct'] / data['total']) * 100 if data['total'] > 0 else 0
-                diff_data.append({'Dificultad': diff.title(), 'Precisión (%)': accuracy})
+                diff_data.append({
+                    'Dificultad': diff.title(), 
+                    'Precisión (%)': accuracy,
+                    'Total': data['total']
+                })
             
             if diff_data:
                 df_diff = pd.DataFrame(diff_data)
-                fig = px.pie(df_diff, values='Precisión (%)', names='Dificultad',
-                           title="Distribución por Dificultad")
-                st.plotly_chart(fig, use_container_width=True)
+                
+                # Gráfico de dona/pie con Altair
+                base = alt.Chart(df_diff).add_selection(
+                    alt.selection_interval()
+                )
+                
+                pie = base.mark_arc(innerRadius=50, outerRadius=90).encode(
+                    theta=alt.Theta('Precisión (%):Q'),
+                    color=alt.Color('Dificultad:N', 
+                                  scale=alt.Scale(scheme='category10'),
+                                  legend=alt.Legend(title="Dificultad")),
+                    tooltip=['Dificultad:N', 'Precisión (%):Q', 'Total:Q']
+                ).properties(
+                    width=300,
+                    height=250,
+                    title="Distribución por Dificultad"
+                ).resolve_scale(
+                    color='independent'
+                )
+                
+                st.altair_chart(pie, use_container_width=True)
 
 # Inicializar estado de sesión
 def initialize_session_state():
